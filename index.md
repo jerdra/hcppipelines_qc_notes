@@ -7,3 +7,6 @@
 - [Source Files](./Source_Files.md)
 - [Implementation Log](./Implementation_Log.md)
 - [Design](./Design.md)
+
+## Mini Tutorials
+- [Using Niworkflows to Generate Visualizations]("./nipype_viz_playbook.ipynb")
