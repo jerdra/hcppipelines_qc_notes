@@ -9,4 +9,4 @@
 - [Design](./Design.md)
 
 ## Mini Tutorials
-- [Using Niworkflows to Generate Visualizations]("./nipype_viz_playbook.ipynb")
+- [Using Niworkflows to Generate Visualizations](./nipype_viz_playbook.ipynb)
