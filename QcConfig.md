@@ -81,7 +81,7 @@ Here, any listed item such as segs will match each listed regex w/1 item per reg
 		  match_on: <REGEX>
 		  values: [<FILE GLOB OR PATH>, <FILE GLOB OR PATH>, ...]
 		  order_by: <ORDER_KEY_REGEX>
-	[bids_map](bids_map):
+	bids_map:
 		ses: {<INTERFACE_ARG>, <REGEX OR CONSTANT>}
 		sub: {<INTERFACE_ARG>, <REGEX OR CONSTANT>}
 		desc: {<INTERFACE_ARG>, <REGEX OR CONSTANT>}
