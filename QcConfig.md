@@ -51,11 +51,11 @@ The YAML file should follow the structure given below:
 		segs: [<FILE GLOB OR PATH>, <FILE GLOB OR PATH>, ...]
 		...
 	bids_map:
-		ses: {<INTERFACE_ARG>, <REGEX OR CONSTANT>}
-		sub: {<INTERFACE_ARG>, <REGEX OR CONSTANT>}
-		desc: {<INTERFACE_ARG>, <REGEX OR CONSTANT>}
-		task: {<INTERFACE_ARG>, <REGEX OR CONSTANT>}
-		modality: {<INTERFACE_ARG>, <REGEX OR CONSTANT>}
+		ses: {args.field, <REGEX OR CONSTANT>}
+		sub: {args.field, <REGEX OR CONSTANT>}
+		desc: {args.field, <REGEX OR CONSTANT>}
+		task: {args.field, <REGEX OR CONSTANT>}
+		modality: {args.field, <REGEX OR CONSTANT>}
 	out_path: <sub>/<ses>/anat/...
 	match_on: [<BIDS_ENTITIES>]
 ```
@@ -69,8 +69,15 @@ Here, any listed item such as segs will match each listed regex w/1 item per reg
 ### Method 3
 
 ```yaml
+global:
+	bids_map:
+		# BIDS PROPERTIES TO APPLY TO ALL
+	env:
+		# ENVIRONMENT VARIABLES TO SET FOR YAML
+	
 
-- Item1:
+filespec:
+  -	name: <NAME_IDENTIFIER>
 	method: (Registration|Segmentation|...)
 	args:
 		- field: bg_nii
@@ -78,26 +85,32 @@ Here, any listed item such as segs will match each listed regex w/1 item per reg
 		- field: fg_nii
 		  values: <FILE GLOB OR PATH>
 		- field: segs
-		  match_on: <REGEX>
 		  values: [<FILE GLOB OR PATH>, <FILE GLOB OR PATH>, ...]
 		  order_by: <ORDER_KEY_REGEX>
-	[bids_map](bids_map):
-		ses: {<INTERFACE_ARG>, <REGEX OR CONSTANT>}
-		sub: {<INTERFACE_ARG>, <REGEX OR CONSTANT>}
-		desc: {<INTERFACE_ARG>, <REGEX OR CONSTANT>}
-		task: {<INTERFACE_ARG>, <REGEX OR CONSTANT>}
-		modality: {<INTERFACE_ARG>, <REGEX OR CONSTANT>}
-	out_path: <sub>/<ses>/anat/...
-	match_on: [<BIDS_ENTITIES>]
+	bids_map:
+		ses: {extract_from: args.field, value: <REGEX OR CONSTANT>}
+		sub: {extract_from: args.field, value: <REGEX OR CONSTANT>}
+		desc: {extract_from: args.field, value: <REGEX OR CONSTANT>}
+		task: {extract_from: args.field, value: <REGEX OR CONSTANT>}
+		modality: {extract_from: args.field, value: <REGEX OR CONSTANT>}
+	out_path: "FILEPATH TEMPLATE USING <bids_map>, i.e {sub}/{ses}/anat/{sub}_{desc}.svg"
+	match_on: [<BIDS_ENTITIES>...]
 ```
 
-**Problems**:
-- We could use the approach of relying on `match_on` for collating the inputs we need. 
-- Or can define it on the `args` level
+**Implementation**
+- Order of operations would be:
+	1. Grab all files meeting a file-path specification
+	2. Generate BIDS specifications for them based on heuristics of full file path
+	3. Group based on BIDS spec + matching for eventually generating reports
+- Enforcing rules are:
+	- If `values` isn't a list, then we have only 1 value per grouping, we cannot have more
+	- If `values` is a list, then we collect as many per grouping as possible. It may make sense to enforce constraints here but not a priority
 
 Specs:
+- `args.field` - refers to an arg[i].field spec (i.e `bg_nii`, `fg_nii`, ...)
 - `method`: Refers to the type of QC image that will be generated
-- `bids_map`: Use information from `<INTERFACE_ARG>` to extract information to map to a BIDS entity
+- `bids_map`: Takes an optional `extract_from` key which can point to an `args.field` entity. In addition takes a `value` key which indicates how to extract the BIDS entity from the `args.field`'s associated `value`. If no `extract_from` is provided, then `value` must be constant.
+- `bids_map`: Use information from `args.field` to extract information to map to a BIDS entity
 - `out_path`: Use `bids_map` generated entities to create a file path (could enforce a BIDS-derivatives to simplify user configuration by default)
 - `args`: Contains a list of dictionaries with a key value of the field to use, and a file expression or path as its value. We can specify additional properties if using `Method 3` such as:
 	- `field` - field name to map to
