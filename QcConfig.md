@@ -110,7 +110,6 @@ Specs:
 - `args.field` - refers to an arg[i].field spec (i.e `bg_nii`, `fg_nii`, ...)
 - `method`: Refers to the type of QC image that will be generated
 - `bids_map`: Takes an optional `extract_from` key which can point to an `args.field` entity. In addition takes a `value` key which indicates how to extract the BIDS entity from the `args.field`'s associated `value`. If no `extract_from` is provided, then `value` must be constant.
-- `bids_map`: Use information from `args.field` to extract information to map to a BIDS entity
 - `out_path`: Use `bids_map` generated entities to create a file path (could enforce a BIDS-derivatives to simplify user configuration by default)
 - `args`: Contains a list of dictionaries with a key value of the field to use, and a file expression or path as its value. We can specify additional properties if using `Method 3` such as:
 	- `field` - field name to map to
